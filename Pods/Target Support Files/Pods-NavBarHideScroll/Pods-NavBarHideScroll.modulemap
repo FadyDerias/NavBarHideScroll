@@ -1,0 +1,6 @@
+framework module Pods_NavBarHideScroll {
+  umbrella header "Pods-NavBarHideScroll-umbrella.h"
+
+  export *
+  module * { export * }
+}
