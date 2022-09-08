@@ -16,6 +16,7 @@ class ScrollingViewController: UIViewController {
 
     private var isNavBarVisible = true
     private var topConstraint: Constraint?
+    private var lastContentOffset: CGPoint = .zero
 
     private var navigationBarHeight: CGFloat {
         return navigationController?.navigationBar.frame.height ?? 0.0
@@ -78,12 +79,12 @@ extension ScrollingViewController: UICollectionViewDataSource {
 
 private extension ScrollingViewController {
     @objc func handleCollectionViewTap(_ sender: UITapGestureRecognizer) {
-        if sender.state == .recognized {
-            didEndScrollviewDrag()
-        }
-
-        if sender.state == .changed {
-            didChangeDrag()
+        switch sender.state {
+        case .began: lastContentOffset = collectionView.contentOffset
+        case .recognized, .failed: didEndScrollviewDrag()
+        case .changed: didChangeDrag()
+        case .possible, .cancelled, .ended: return
+        @unknown default: return
         }
     }
 
@@ -128,6 +129,7 @@ private extension ScrollingViewController {
         guard abs(value) <= navigationBarHeight else {
             return
         }
+        collectionView.contentOffset = lastContentOffset
         navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, value))
         topConstraint?.update(offset: min(0, value))
         titleView.alpha = min(1, 1 - (abs(value) / 50))
