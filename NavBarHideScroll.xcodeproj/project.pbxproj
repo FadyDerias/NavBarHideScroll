@@ -14,9 +14,7 @@
 		0581467328AD81A30052F5AE /* CustomNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0581467228AD81A30052F5AE /* CustomNavigationController.swift */; };
 		0581467528AD82A90052F5AE /* LabelCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0581467428AD82A90052F5AE /* LabelCollectionViewCell.swift */; };
 		059A883B28AE888100E6DBC4 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059A883A28AE888100E6DBC4 /* AppDelegate.swift */; };
-		059A883D28AEAEFB00E6DBC4 /* UIApplication+Window.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059A883C28AEAEFB00E6DBC4 /* UIApplication+Window.swift */; };
 		059A883F28AEB27A00E6DBC4 /* UIScrollView+Direction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059A883E28AEB27A00E6DBC4 /* UIScrollView+Direction.swift */; };
-		059A884128B03E3C00E6DBC4 /* DraftsFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059A884028B03E3C00E6DBC4 /* DraftsFile.swift */; };
 		797EEE7508B45F1C2F48C40E /* Pods_NavBarHideScroll.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 93A726708249B7149A57C393 /* Pods_NavBarHideScroll.framework */; };
 /* End PBXBuildFile section */
 
@@ -30,9 +28,7 @@
 		0581467228AD81A30052F5AE /* CustomNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomNavigationController.swift; sourceTree = "<group>"; };
 		0581467428AD82A90052F5AE /* LabelCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelCollectionViewCell.swift; sourceTree = "<group>"; };
 		059A883A28AE888100E6DBC4 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		059A883C28AEAEFB00E6DBC4 /* UIApplication+Window.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+Window.swift"; sourceTree = "<group>"; };
 		059A883E28AEB27A00E6DBC4 /* UIScrollView+Direction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Direction.swift"; sourceTree = "<group>"; };
-		059A884028B03E3C00E6DBC4 /* DraftsFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DraftsFile.swift; sourceTree = "<group>"; };
 		67F625447C7DE31CA4DA2566 /* Pods-NavBarHideScroll.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NavBarHideScroll.release.xcconfig"; path = "Target Support Files/Pods-NavBarHideScroll/Pods-NavBarHideScroll.release.xcconfig"; sourceTree = "<group>"; };
 		8807F0259375F02B90FBD44F /* Pods-NavBarHideScroll.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NavBarHideScroll.debug.xcconfig"; path = "Target Support Files/Pods-NavBarHideScroll/Pods-NavBarHideScroll.debug.xcconfig"; sourceTree = "<group>"; };
 		93A726708249B7149A57C393 /* Pods_NavBarHideScroll.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NavBarHideScroll.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -74,14 +70,12 @@
 				059A883A28AE888100E6DBC4 /* AppDelegate.swift */,
 				0581466028AD7FA20052F5AE /* SceneDelegate.swift */,
 				0581466228AD7FA20052F5AE /* ScrollingViewController.swift */,
-				0581466728AD7FA40052F5AE /* Assets.xcassets */,
-				0581466C28AD7FA40052F5AE /* Info.plist */,
 				0581467228AD81A30052F5AE /* CustomNavigationController.swift */,
 				0581467428AD82A90052F5AE /* LabelCollectionViewCell.swift */,
 				0528EB1A28AE78F500FBFB31 /* TitleSearchView.swift */,
-				059A883C28AEAEFB00E6DBC4 /* UIApplication+Window.swift */,
 				059A883E28AEB27A00E6DBC4 /* UIScrollView+Direction.swift */,
-				059A884028B03E3C00E6DBC4 /* DraftsFile.swift */,
+				0581466728AD7FA40052F5AE /* Assets.xcassets */,
+				0581466C28AD7FA40052F5AE /* Info.plist */,
 			);
 			path = NavBarHideScroll;
 			sourceTree = "<group>";
@@ -221,10 +215,8 @@
 				0528EB1B28AE78F500FBFB31 /* TitleSearchView.swift in Sources */,
 				059A883F28AEB27A00E6DBC4 /* UIScrollView+Direction.swift in Sources */,
 				0581467528AD82A90052F5AE /* LabelCollectionViewCell.swift in Sources */,
-				059A883D28AEAEFB00E6DBC4 /* UIApplication+Window.swift in Sources */,
 				0581466328AD7FA20052F5AE /* ScrollingViewController.swift in Sources */,
 				0581466128AD7FA20052F5AE /* SceneDelegate.swift in Sources */,
-				059A884128B03E3C00E6DBC4 /* DraftsFile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
