@@ -76,7 +76,7 @@ extension ScrollingViewController: UICollectionViewDataSource {
     }
 }
 
-extension ScrollingViewController {
+private extension ScrollingViewController {
     @objc func handleCollectionViewTap(_ sender: UITapGestureRecognizer) {
         if sender.state == .recognized {
             didEndScrollviewDrag()
@@ -87,7 +87,7 @@ extension ScrollingViewController {
         }
     }
 
-    private func didEndScrollviewDrag() {
+    func didEndScrollviewDrag() {
         if collectionView.isScrollingDown && isNavBarVisible {
             abs(collectionView.yTranslation) >= 25 ? hideNavigationBar { [weak self] in self?.isNavBarVisible = false } : showNavigationBar()
         } else if collectionView.isScrollingUp && !isNavBarVisible {
@@ -97,7 +97,7 @@ extension ScrollingViewController {
         scrollingValue = 0.0
     }
 
-    private func didChangeDrag() {
+    func didChangeDrag() {
         if collectionView.isScrollingDown && abs(collectionView.scrollingVelocity) < 250 && isNavBarVisible {
             didScrollDown(yTranslation: collectionView.yTranslation)
         } else if collectionView.isScrollingUp && !isNavBarVisible {
