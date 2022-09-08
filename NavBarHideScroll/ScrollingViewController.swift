@@ -12,27 +12,14 @@ class ScrollingViewController: UIViewController {
     private let titleView = TitleSearchView()
     private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     private let segmentedView = UIView()
+    private var scrollingValue = 0.0
 
     private var isNavBarVisible = true
     private var topConstraint: Constraint?
 
-    private var statusBarHeight: CGFloat {
-        return UIApplication.shared.statusBarFrame.height
-    }
-
     private var navigationBarHeight: CGFloat {
-        let safeAreaTop = UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.safeAreaInsets.top ?? 0
-        return safeAreaTop + (navigationController?.navigationBar.frame.height ?? 0)
+        return navigationController?.navigationBar.frame.height ?? 0.0
     }
-
-    private var totalNavigationViewHeight: CGFloat {
-        return statusBarHeight + navigationBarHeight
-    }
-
-    private var isNavigationBarHidden: Bool {
-        return navigationController?.isNavigationBarHidden ?? false
-    }
-
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -91,109 +78,113 @@ extension ScrollingViewController: UICollectionViewDataSource {
 
 extension ScrollingViewController {
     @objc func handleCollectionViewTap(_ sender: UITapGestureRecognizer) {
-        switch sender.state {
-        case .recognized: didEndScrollviewDrag()
-        case .changed: didChangeDrag()
-        case .began, .cancelled, .ended, .possible, .failed: return
-        @unknown default: print("@unknown Drag Error")
+        if sender.state == .recognized {
+            didEndScrollviewDrag()
+        }
+
+        if sender.state == .changed {
+            didChangeDrag()
         }
     }
 
     private func didEndScrollviewDrag() {
-        print("Recognized Drag")
-
         if collectionView.isScrollingDown && isNavBarVisible {
-            didEndDraggingDown(yTranslation: collectionView.yTranslation)
+            abs(collectionView.yTranslation) >= 25 ? hideNavigationBar { [weak self] in self?.isNavBarVisible = false } : showNavigationBar()
         } else if collectionView.isScrollingUp && !isNavBarVisible {
-            didEndDraggingUp(yTranslation: collectionView.yTranslation)
+            showNavigationBar()
         }
+
+        scrollingValue = 0.0
     }
 
     private func didChangeDrag() {
-        print("Changed Drag \(collectionView.yTranslation)")
-
-        if collectionView.isScrollingDown && isNavBarVisible {
-            didScrollDown(yOffset: collectionView.contentOffset.y, yTranslation: collectionView.yTranslation)
+        if collectionView.isScrollingDown && abs(collectionView.scrollingVelocity) < 250 && isNavBarVisible {
+            didScrollDown(yTranslation: collectionView.yTranslation)
         } else if collectionView.isScrollingUp && !isNavBarVisible {
-            didScrollUp(yOffset: collectionView.contentOffset.y, yTranslation: collectionView.yTranslation)
+            didScrollUp(yOffset: collectionView.contentOffset.y)
         }
     }
 }
 
 private extension ScrollingViewController {
-    func didScrollDown(yOffset: CGFloat, yTranslation: CGFloat) {
-        print("Down Scroll: yTranslation: \(yTranslation) yOffset: \(yOffset)")
-        isNavBarVisible = yTranslation < totalNavigationViewHeight
-        animateHidingNavigationBar(yTranslation: yTranslation)
-    }
-
-    func didScrollUp(yOffset: CGFloat, yTranslation: CGFloat) {
-        guard yOffset <= totalNavigationViewHeight else {
+    func didScrollUp(yOffset: CGFloat) {
+        guard (0.0...navigationBarHeight).contains(yOffset) else {
             return
         }
-        print("Up Scroll: yTranslation: \(yTranslation) yOffset: \(yOffset)")
-        isNavBarVisible = abs(yTranslation) < totalNavigationViewHeight
-        animateHidingNavigationBar(yTranslation: yTranslation)
+        scrollViews(value: -yOffset)
     }
 
-    func animateHidingNavigationBar(yTranslation: CGFloat) {
-        if abs(yTranslation) <= totalNavigationViewHeight {
-            navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, yTranslation))
+    func didScrollDown(yTranslation: CGFloat) {
+        if abs(yTranslation) <= navigationBarHeight {
+            scrollViews(value: yTranslation)
+        } else if scrollingValue <= navigationBarHeight && abs(yTranslation) > navigationBarHeight {
+            hideNavigationBar(completion: nil)
         }
 
-        if abs(yTranslation) <= statusBarHeight {
-            topConstraint?.update(offset: min(0, yTranslation))
+        scrollingValue = abs(yTranslation)
+    }
+
+    func scrollViews(value: CGFloat) {
+        guard abs(value) <= navigationBarHeight else {
+            return
+        }
+        navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, value))
+        topConstraint?.update(offset: min(0, value))
+        titleView.alpha = min(1, 1 - (abs(value) / 50))
+    }
+
+    //Gradually scrolls back the top view with user scrolling - currently, not used
+    func scrollUpCustom(yOffset: CGFloat, yTranslation: CGFloat) {
+        guard yOffset > 0 else {
+            return
+        }
+        if let transform = navigationController?.navigationBar.transform, transform.ty < 0 {
+            navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, scrollingValue + yTranslation))
+            titleView.alpha = min(1, 1 - (abs(scrollingValue + yTranslation) / 50))
         }
 
-        titleView.alpha = 1 - (abs(yTranslation) / 100)
-    }
-
-    func didEndDraggingUp(yTranslation: CGFloat) {
-        abs(yTranslation) >= 25 ? showSearchBar() : hideSearchBar()
-    }
-
-    func didEndDraggingDown(yTranslation: CGFloat) {
-        abs(yTranslation) >= 25 ? hideSearchBar() : showSearchBar()
+        if abs(scrollingValue + yTranslation) <= navigationBarHeight && scrollingValue + yTranslation <= 0 {
+            topConstraint?.update(offset: scrollingValue + yTranslation)
+        }
     }
 }
 
 private extension ScrollingViewController {
-    func showSearchBar() {
-        print("Force Show Search Bar")
-        titleView.alpha = 1
-
-        UIView.animate(withDuration: 0.3, delay: 0, options: [.curveLinear, .allowUserInteraction]) { [weak self] in
+    func showNavigationBar(animated: Bool = true) {
+        UIView.animate(withDuration: animated ? 0.6 : 0.0, delay: 0, options: .beginFromCurrentState) { [weak self] in
+            self?.resetNavigationBar()
             self?.showSegmentedView()
-            self?.showNavigationBar()
             self?.view.layoutIfNeeded()
+            self?.titleView.alpha = 1
         } completion: { [weak self] completed in
             self?.isNavBarVisible = true
         }
     }
 
-    func hideSearchBar() {
-        print("Force Hide Search Bar")
+    func hideNavigationBar(animated: Bool = true, completion: (() -> Void)?) {
         titleView.alpha = 0
 
-        UIView.animate(withDuration: 0.0, delay: 0, options: [.curveLinear, .allowUserInteraction]) { [weak self] in
+        UIView.animate(withDuration: animated ? 0.1 : 0.0, delay: 0, options: .beginFromCurrentState) { [weak self] in
             self?.scrollSegmentedViewToTop()
-            self?.hideNavigationBar()
+            self?.scrollNavigationBarToTop()
             self?.view.layoutIfNeeded()
-        } completion: { [weak self] completed in
-            self?.isNavBarVisible = false
+        } completion: { completed in
+            if completed {
+                completion?()
+            }
         }
     }
 
-    func showNavigationBar() {
+    func scrollNavigationBarToTop() {
+        navigationController?.navigationBar.transform = .init(translationX: 0, y: -navigationBarHeight)
+    }
+
+    func resetNavigationBar() {
         navigationController?.navigationBar.transform = .identity
     }
 
-    func hideNavigationBar() {
-        navigationController?.navigationBar.transform = .init(translationX: 0, y: -totalNavigationViewHeight)
-    }
-
     func scrollSegmentedViewToTop() {
-        topConstraint?.update(offset: -statusBarHeight)
+        topConstraint?.update(offset: -navigationBarHeight)
     }
 
     func showSegmentedView() {
