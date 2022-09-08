@@ -26,23 +26,4 @@ class CustomNavigationController: UINavigationController {
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
-    func update(backgroundColor: UIColor) {
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = backgroundColor
-            navigationBar.standardAppearance = appearance
-            navigationBar.scrollEdgeAppearance = appearance
-    }
-
-    func fadeOut() {
-        let transition:CATransition = CATransition()
-        transition.duration = 0.5
-        transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
-        transition.type = CATransitionType.push
-        transition.subtype = CATransitionSubtype.fromTop//fromTop//fromBottom
-        navigationBar.layer.add(transition, forKey: kCATransition)
-//        setNavigationBarHidden(true, animated: true)
-        navigationBar.isHidden = true
-    }
 }
