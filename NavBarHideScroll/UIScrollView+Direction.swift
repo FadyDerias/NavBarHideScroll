@@ -17,17 +17,11 @@ extension UIScrollView {
     }
 
     var isScrollingUp: Bool {
-//        return panGestureRecognizer.velocity(in: superview).y > 0
         panGestureRecognizer.translation(in: superview).y > 0
     }
 
     var isScrollingDown: Bool {
-//        return panGestureRecognizer.velocity(in: superview).y < 0
         panGestureRecognizer.translation(in: superview).y < 0
     }
-
-//    var yTranslation: CGFloat {
-//        panGestureRecognizer.translation(in: superview).y 
-//    }
 }
 
