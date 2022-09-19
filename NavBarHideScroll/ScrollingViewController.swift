@@ -22,6 +22,10 @@ class ScrollingViewController: UIViewController {
         return navigationController?.navigationBar.frame.height ?? 0.0
     }
 
+    private var isNavBarRestored: Bool {
+        return navigationController?.navigationBar.transform == .identity
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -89,19 +93,27 @@ private extension ScrollingViewController {
     }
 
     func didEndScrollviewDrag() {
-        if collectionView.isScrollingDown && isNavBarVisible {
-            abs(collectionView.yTranslation) >= 25 ? hideNavigationBar { [weak self] in self?.isNavBarVisible = false } : showNavigationBar()
-        } else if collectionView.isScrollingUp && !isNavBarVisible {
+        if collectionView.didTranslateDown {
+            didEndDragDown()
+        } else if collectionView.didScrollUp && !isNavBarRestored {
             showNavigationBar()
         }
 
         scrollingValue = 0.0
     }
 
+    func didEndDragDown() {
+        if collectionView.didScrollUp {
+            showNavigationBar()
+        } else if isNavBarVisible {
+            abs(collectionView.yTranslation) >= 25 ? hideNavigationBar { [weak self] in self?.isNavBarVisible = false } : showNavigationBar()
+        }
+    }
+
     func didChangeDrag() {
-        if collectionView.isScrollingDown && abs(collectionView.scrollingVelocity) < 250 && isNavBarVisible {
+        if collectionView.didTranslateDown && abs(collectionView.scrollingVelocity) < 250 && isNavBarVisible {
             didScrollDown(yTranslation: collectionView.yTranslation)
-        } else if collectionView.isScrollingUp && !isNavBarVisible {
+        } else if collectionView.didTranslateUp && !isNavBarVisible {
             didScrollUp(yOffset: collectionView.contentOffset.y)
         }
     }
@@ -117,6 +129,7 @@ private extension ScrollingViewController {
 
     func didScrollDown(yTranslation: CGFloat) {
         if abs(yTranslation) <= navigationBarHeight {
+            collectionView.contentOffset = lastContentOffset
             scrollViews(value: yTranslation)
         } else if scrollingValue <= navigationBarHeight && abs(yTranslation) > navigationBarHeight {
             hideNavigationBar(completion: nil)
@@ -129,7 +142,6 @@ private extension ScrollingViewController {
         guard abs(value) <= navigationBarHeight else {
             return
         }
-        collectionView.contentOffset = lastContentOffset
         navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, value))
         topConstraint?.update(offset: min(0, value))
         titleView.alpha = min(1, 1 - (abs(value) / 50))
@@ -164,12 +176,11 @@ private extension ScrollingViewController {
     }
 
     func hideNavigationBar(animated: Bool = true, completion: (() -> Void)?) {
-        titleView.alpha = 0
-
         UIView.animate(withDuration: animated ? 0.1 : 0.0, delay: 0, options: .beginFromCurrentState) { [weak self] in
             self?.scrollSegmentedViewToTop()
             self?.scrollNavigationBarToTop()
             self?.view.layoutIfNeeded()
+            self?.titleView.alpha = 0
         } completion: { completed in
             if completed {
                 completion?()

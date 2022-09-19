@@ -16,12 +16,16 @@ extension UIScrollView {
         panGestureRecognizer.translation(in: self).y
     }
 
-    var isScrollingUp: Bool {
+    var didTranslateUp: Bool {
         panGestureRecognizer.translation(in: superview).y > 0
     }
 
-    var isScrollingDown: Bool {
+    var didTranslateDown: Bool {
         panGestureRecognizer.translation(in: superview).y < 0
+    }
+
+    var didScrollUp: Bool {
+        panGestureRecognizer.velocity(in: self).y > 0
     }
 }
 
