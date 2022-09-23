@@ -26,6 +26,10 @@ class ScrollingViewController: UIViewController {
         return navigationController?.navigationBar.transform == .identity
     }
 
+    private var shouldTranslateDown: Bool {
+        return isNavBarVisible || isNavBarRestored
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -111,7 +115,10 @@ private extension ScrollingViewController {
     }
 
     func didChangeDrag() {
-        if collectionView.didTranslateDown && abs(collectionView.scrollingVelocity) < 250 && isNavBarVisible {
+        guard abs(collectionView.scrollingVelocity) < 250 else {
+            return
+        }
+        if collectionView.didTranslateDown && shouldTranslateDown {
             didScrollDown(yTranslation: collectionView.yTranslation)
         } else if collectionView.didTranslateUp && !isNavBarVisible {
             didScrollUp(yOffset: collectionView.contentOffset.y)
